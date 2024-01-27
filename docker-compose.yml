@@ -1,0 +1,15 @@
+services:
+  db:
+    container_name: postgres
+    image: postgres:15-bullseye
+    user: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=gorm
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:
