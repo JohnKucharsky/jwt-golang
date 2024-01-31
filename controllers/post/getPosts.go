@@ -1,15 +1,14 @@
 package controllers
 
 import (
-	"github.com/JohnKucharsky/jwt-golang/initializers"
 	"github.com/JohnKucharsky/jwt-golang/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func GetPosts(c *gin.Context) {
+func (db *DatabaseController) GetPosts(c *gin.Context) {
 	var posts []models.Post
-	err := initializers.DB.Model(&models.Post{}).Preload("Tags").Find(&posts).Error
+	err := db.Database.Model(&models.Post{}).Preload("Tags").Find(&posts).Error
 
 	if err != nil {
 		c.JSON(
@@ -27,11 +26,11 @@ func GetPosts(c *gin.Context) {
 	)
 }
 
-func GetOnePost(c *gin.Context) {
+func (db *DatabaseController) GetOnePost(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
-	err := initializers.DB.Model(&models.Post{}).Preload("Tags").First(
+	err := db.Database.Model(&models.Post{}).Preload("Tags").First(
 		&post,
 		id,
 	).Error

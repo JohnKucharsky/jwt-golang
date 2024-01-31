@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/JohnKucharsky/jwt-golang/initializers"
 	"github.com/JohnKucharsky/jwt-golang/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -11,7 +10,7 @@ import (
 	"time"
 )
 
-func Login(c *gin.Context) {
+func (db *DatabaseController) Login(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -30,7 +29,7 @@ func Login(c *gin.Context) {
 
 	var user models.User
 
-	result := initializers.DB.First(&user, "email = ?", body.Email)
+	result := db.Database.First(&user, "email = ?", body.Email)
 
 	if result.Error != nil {
 		c.JSON(

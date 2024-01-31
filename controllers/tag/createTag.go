@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/JohnKucharsky/jwt-golang/initializers"
 	"github.com/JohnKucharsky/jwt-golang/models"
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
@@ -10,7 +9,7 @@ import (
 	"strconv"
 )
 
-func CreateTag(c *gin.Context) {
+func (db *DatabaseController) CreateTag(c *gin.Context) {
 	postId := c.Query("post")
 
 	var body struct {
@@ -30,7 +29,7 @@ func CreateTag(c *gin.Context) {
 
 	tag := models.Tag{Name: body.Name, Color: body.Color}
 
-	result := initializers.DB.Model(&models.Tag{}).Preload("Posts").Create(&tag)
+	result := db.Database.Model(&models.Tag{}).Preload("Posts").Create(&tag)
 
 	if result.Error != nil {
 		c.JSON(
@@ -43,7 +42,7 @@ func CreateTag(c *gin.Context) {
 
 	// append post
 	var posts []models.Post
-	err = initializers.DB.Model(&tag).Association("Posts").Find(&posts)
+	err = db.Database.Model(&tag).Association("Posts").Find(&posts)
 
 	if err != nil {
 		c.JSON(
@@ -68,7 +67,7 @@ func CreateTag(c *gin.Context) {
 
 	if postId != "" && !ok {
 		var post models.Post
-		postResult := initializers.DB.First(&post, postId)
+		postResult := db.Database.First(&post, postId)
 
 		if postResult.Error != nil {
 			c.JSON(
@@ -82,7 +81,7 @@ func CreateTag(c *gin.Context) {
 		posts = append(posts, post)
 	}
 
-	err = initializers.DB.Model(&tag).Association("Posts").Append(
+	err = db.Database.Model(&tag).Association("Posts").Append(
 		posts,
 	)
 

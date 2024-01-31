@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"github.com/JohnKucharsky/jwt-golang/initializers"
 	"github.com/JohnKucharsky/jwt-golang/models"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
-func Signup(c *gin.Context) {
+func (db *DatabaseController) Signup(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email" binding:"required"`
 		Password string
@@ -38,7 +37,7 @@ func Signup(c *gin.Context) {
 
 	user := models.User{Email: body.Email, Password: string(hash)}
 
-	result := initializers.DB.Create(&user)
+	result := db.Database.Create(&user)
 
 	if result.Error != nil {
 		c.JSON(

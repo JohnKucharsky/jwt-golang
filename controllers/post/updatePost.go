@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/JohnKucharsky/jwt-golang/initializers"
 	"github.com/JohnKucharsky/jwt-golang/models"
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
@@ -10,7 +9,7 @@ import (
 	"strconv"
 )
 
-func UpdatePost(c *gin.Context) {
+func (db *DatabaseController) UpdatePost(c *gin.Context) {
 	id := c.Param("id")
 	tagId := c.Query("tag")
 
@@ -30,7 +29,7 @@ func UpdatePost(c *gin.Context) {
 	}
 
 	var post models.Post
-	result := initializers.DB.First(&post, id)
+	result := db.Database.First(&post, id)
 
 	if result.Error != nil {
 		c.JSON(
@@ -41,7 +40,7 @@ func UpdatePost(c *gin.Context) {
 		return
 	}
 
-	result = initializers.DB.Model(&post).Updates(
+	result = db.Database.Model(&post).Updates(
 		models.Post{
 			Title: body.Title,
 			Body:  body.Body,
@@ -59,7 +58,7 @@ func UpdatePost(c *gin.Context) {
 
 	// append tag
 	var tags []models.Tag
-	err = initializers.DB.Model(&post).Association("Tags").Find(&tags)
+	err = db.Database.Model(&post).Association("Tags").Find(&tags)
 
 	if err != nil {
 		c.JSON(
@@ -84,7 +83,7 @@ func UpdatePost(c *gin.Context) {
 
 	if tagId != "" && !ok {
 		var tag models.Tag
-		tagResult := initializers.DB.First(&tag, tagId)
+		tagResult := db.Database.First(&tag, tagId)
 
 		if tagResult.Error != nil {
 			c.JSON(
@@ -98,7 +97,7 @@ func UpdatePost(c *gin.Context) {
 		tags = append(tags, tag)
 	}
 
-	err = initializers.DB.Model(&post).Association("Tags").Append(
+	err = db.Database.Model(&post).Association("Tags").Append(
 		tags,
 	)
 

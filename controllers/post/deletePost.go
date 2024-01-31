@@ -1,17 +1,16 @@
 package controllers
 
 import (
-	"github.com/JohnKucharsky/jwt-golang/initializers"
 	"github.com/JohnKucharsky/jwt-golang/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func DeletePost(c *gin.Context) {
+func (db *DatabaseController) DeletePost(c *gin.Context) {
 	id := c.Param("id")
 
 	var post models.Post
-	result := initializers.DB.First(&post, id)
+	result := db.Database.First(&post, id)
 
 	if result.Error != nil {
 		c.JSON(
@@ -22,7 +21,7 @@ func DeletePost(c *gin.Context) {
 		return
 	}
 
-	result = initializers.DB.Delete(&models.Post{}, id)
+	result = db.Database.Delete(&models.Post{}, id)
 
 	if result.Error != nil {
 		c.JSON(
